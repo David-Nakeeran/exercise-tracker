@@ -8,7 +8,7 @@ public class ExerciseDTO
 
     public DateTime DateEnd { get; set; }
 
-    public TimeSpan Duration => DateEnd - DateStart;
+    public TimeSpan Duration { get; }
 
     public string Comments { get; set; } = string.Empty;
 }
