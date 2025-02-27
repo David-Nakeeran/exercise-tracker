@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using ExerciseTracker.Coordinators;
 using Microsoft.Extensions.DependencyInjection;
+using ExerciseTracker.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExerciseTracker;
 
@@ -21,6 +23,8 @@ class Program
 
         // Register services
         var builder = Host.CreateApplicationBuilder(args);
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         builder.Services.AddSingleton<ApplicationCoordinator>();
 
         // Build app from services
