@@ -1,3 +1,4 @@
+using ExerciseTracker.Data;
 using ExerciseTracker.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,10 +6,10 @@ namespace ExerciseTracker.Repository;
 
 public class ExerciseRepository<T> : IExerciseRepository<T> where T : class
 {
-    private readonly DbContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly DbSet<T> _dbSet;
 
-    public ExerciseRepository(DbContext context)
+    public ExerciseRepository(ApplicationDbContext context)
     {
         _context = context;
         _dbSet = _context.Set<T>();
