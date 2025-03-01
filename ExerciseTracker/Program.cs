@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ExerciseTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using ExerciseTracker.Repository;
+using ExerciseTracker.Utilities;
 
 namespace ExerciseTracker;
 
@@ -26,6 +27,9 @@ class Program
         var builder = Host.CreateApplicationBuilder(args);
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddSingleton<UserInput>();
+        builder.Services.AddSingleton<Validation>();
+        builder.Services.AddSingleton<DateTimeParser>();
         builder.Services.AddSingleton(typeof(ExerciseRepository<>), typeof(ExerciseRepository<>));
         builder.Services.AddSingleton<ApplicationCoordinator>();
 
