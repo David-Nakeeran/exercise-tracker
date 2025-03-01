@@ -1,3 +1,6 @@
+using ExerciseTracker.Controllers;
+using ExerciseTracker.Display;
+using ExerciseTracker.Models;
 using ExerciseTracker.Utilities;
 
 namespace ExerciseTracker.Coordinators;
@@ -6,12 +9,18 @@ class ApplicationCoordinator
 {
     private readonly UserInput _userInput;
 
-    public ApplicationCoordinator(UserInput userInput)
+    private readonly ExerciseController _exerciseController;
+
+    private readonly DisplayManager _displayManager;
+
+    public ApplicationCoordinator(UserInput userInput, ExerciseController exerciseController, DisplayManager displayManager)
     {
         _userInput = userInput;
+        _exerciseController = exerciseController;
+        _displayManager = displayManager;
     }
 
-    internal void Start()
+    internal async Task Start()
     {
         bool isAppActive = true;
 
@@ -22,7 +31,7 @@ class ApplicationCoordinator
             switch (userSelection)
             {
                 case "View all exercises":
-
+                    await AllExercises();
                     break;
                 case "Create exercise":
 
@@ -38,5 +47,18 @@ class ApplicationCoordinator
                     break;
             }
         }
+    }
+
+    internal async Task<List<ExerciseDTO>> GetAllExercises()
+    {
+        var exercises = await _exerciseController.GetAllExercisesAsync();
+        return exercises;
+    }
+
+    internal async Task AllExercises()
+    {
+        var exercises = await GetAllExercises();
+        _displayManager.RenderGetAllExercisesTable(exercises);
+        _userInput.WaitForUserInput();
     }
 }
