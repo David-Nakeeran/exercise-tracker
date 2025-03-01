@@ -6,12 +6,19 @@ using ExerciseTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using ExerciseTracker.Repository;
 using ExerciseTracker.Utilities;
+using ExerciseTracker.Interface;
+using ExerciseTracker.Services;
+using ExerciseTracker.Controllers;
+using ExerciseTracker.Display;
+using ExerciseTracker.Interfaces;
+using ExerciseTracker.Models;
+using System.Threading.Tasks;
 
 namespace ExerciseTracker;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 
@@ -30,8 +37,12 @@ class Program
         builder.Services.AddSingleton<UserInput>();
         builder.Services.AddSingleton<Validation>();
         builder.Services.AddSingleton<DateTimeParser>();
-        builder.Services.AddSingleton(typeof(ExerciseRepository<>), typeof(ExerciseRepository<>));
-        builder.Services.AddSingleton<ApplicationCoordinator>();
+        builder.Services.AddScoped<ExerciseController>();
+        builder.Services.AddScoped<ExerciseService>();
+        builder.Services.AddSingleton<DisplayManager>();
+        builder.Services.AddSingleton<IExerciseMapper, ExerciseMapper>();
+        builder.Services.AddScoped(typeof(IExerciseRepository<>), typeof(ExerciseRepository<>));
+        builder.Services.AddScoped<ApplicationCoordinator>();
 
         // Build app from services
         var app = builder.Build();
@@ -40,6 +51,6 @@ class Program
         using var scope = app.Services.CreateScope();
         var appCoordinator = scope.ServiceProvider.GetRequiredService<ApplicationCoordinator>();
 
-        appCoordinator.Start();
+        await appCoordinator.Start();
     }
 }
