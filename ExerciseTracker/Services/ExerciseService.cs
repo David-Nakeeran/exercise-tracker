@@ -23,11 +23,17 @@ public class ExerciseService
         return exercisesDTO;
     }
 
-    internal async Task<ExerciseDTO> GetExerciseByIdAsync(long id)
+    internal async Task<Exercise> GetExerciseByIdAsync(long id)
     {
         var exercise = await _exerciseRepo.GetExerciseByIdAsync(id);
-        var exerciseDTO = _exerciseMapper.ExerciseToDTO(exercise);
-        return exerciseDTO;
+        return exercise;
+    }
+
+    internal async Task<bool> IsExerciseDeletedAsync(Exercise exercise)
+    {
+        int exerciseDeleted = await _exerciseRepo.DeleteExerciseAsync(exercise);
+        if (exerciseDeleted != 1) return false;
+        return true;
     }
 
 }
