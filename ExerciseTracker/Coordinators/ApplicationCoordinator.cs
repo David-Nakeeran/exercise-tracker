@@ -61,4 +61,33 @@ class ApplicationCoordinator
         _displayManager.RenderGetAllExercisesTable(exercises);
         _userInput.WaitForUserInput();
     }
+
+    internal async Task<Dictionary<long, long>> GetKeyValuePairsExercises()
+    {
+        var exercises = await GetAllExercises();
+        var keyValuePairs = new Dictionary<long, long>();
+        long displayId = 1;
+
+        foreach (var exercise in exercises)
+        {
+            keyValuePairs[displayId] = exercise.Id;
+            displayId++;
+        }
+        return keyValuePairs;
+    }
+
+    internal async Task<ExerciseDTO?> GetExercise(long id)
+    {
+        var idPairs = await GetKeyValuePairsExercises();
+        if (!idPairs.ContainsKey(id))
+        {
+            _displayManager.IncorrectId();
+            _userInput.WaitForUserInput();
+            return null;
+        }
+
+        long exerciseId = idPairs[id];
+
+        return await _exerciseController.GetExerciseByIdAsync(exerciseId);
+    }
 }
