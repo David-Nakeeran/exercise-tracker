@@ -23,4 +23,11 @@ public class ExerciseService
         return exercisesDTO;
     }
 
+    internal async Task<ExerciseDTO> GetExerciseByIdAsync(long id)
+    {
+        var exercise = await _exerciseRepo.GetExerciseByIdAsync(id);
+        var exerciseDTO = _exerciseMapper.ExerciseToDTO(exercise);
+        return exerciseDTO;
+    }
+
 }
