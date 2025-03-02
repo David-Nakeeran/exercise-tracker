@@ -16,8 +16,13 @@ public class ExerciseController
         return await _exerciseService.GetAllExercisesAsync();
     }
 
-    internal async Task<ExerciseDTO> GetExerciseByIdAsync(long id)
+    internal async Task<Exercise> GetExerciseByIdAsync(long id)
     {
         return await _exerciseService.GetExerciseByIdAsync(id);
+    }
+
+    internal async Task<bool> IsExerciseDeleteAsync(Exercise exercise)
+    {
+        return await _exerciseService.IsExerciseDeletedAsync(exercise);
     }
 }
