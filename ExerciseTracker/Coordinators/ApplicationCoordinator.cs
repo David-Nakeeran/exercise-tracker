@@ -76,7 +76,7 @@ class ApplicationCoordinator
         return keyValuePairs;
     }
 
-    internal async Task<ExerciseDTO?> GetExercise(long id)
+    internal async Task<Exercise?> GetExercise(long id)
     {
         var idPairs = await GetKeyValuePairsExercises();
         if (!idPairs.ContainsKey(id))
@@ -89,5 +89,37 @@ class ApplicationCoordinator
         long exerciseId = idPairs[id];
 
         return await _exerciseController.GetExerciseByIdAsync(exerciseId);
+    }
+
+    internal async Task DeleteExercise()
+    {
+        await AllExercises();
+
+        var displayId = _userInput.GetId("Please enter the id of exercise or enter 0 to return to main menu");
+        if (displayId == 0) return;
+
+        var idPairs = await GetKeyValuePairsExercises();
+
+        if (!idPairs.ContainsKey(displayId))
+        {
+            _displayManager.IncorrectId();
+            _userInput.WaitForUserInput();
+            return;
+        }
+
+        long employeeId = idPairs[displayId];
+
+        var result = await _employeeService.DeleteEmployee(employeeId);
+
+        if (result.Success)
+        {
+            _displayManager.ShowMessage(result.Message);
+            _userInput.WaitForUserInput();
+        }
+        else
+        {
+            _displayManager.ShowMessage(result.Message);
+            _userInput.WaitForUserInput();
+        }
     }
 }
