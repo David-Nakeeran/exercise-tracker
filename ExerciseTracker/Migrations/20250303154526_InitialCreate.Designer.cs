@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExerciseTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250227133345_InitialCreate")]
+    [Migration("20250303154526_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,11 +27,11 @@ namespace ExerciseTracker.Migrations
 
             modelBuilder.Entity("ExerciseTracker.Models.Exercise", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Comments")
                         .IsRequired()
