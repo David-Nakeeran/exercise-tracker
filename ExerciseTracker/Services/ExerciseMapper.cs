@@ -11,7 +11,6 @@ public class ExerciseMapper : IExerciseMapper
             Id = exercise.Id,
             DateStart = exercise.DateStart,
             DateEnd = exercise.DateEnd,
-            Duration = exercise.Duration,
-            Comments = exercise.Comments,
+            Comments = exercise.Comments
         };
 }
