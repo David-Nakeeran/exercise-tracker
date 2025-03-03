@@ -7,7 +7,7 @@ namespace ExerciseTracker.Models;
 public class Exercise
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public DateTime DateStart { get; set; }
 
