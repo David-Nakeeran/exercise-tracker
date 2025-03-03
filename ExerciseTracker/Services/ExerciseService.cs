@@ -29,11 +29,30 @@ public class ExerciseService
         return exercise;
     }
 
+    internal async Task<bool> IsExerciseAddedAsync(ExerciseDTO exerciseDTO)
+    {
+        var exercise = new Exercise
+        {
+            DateStart = exerciseDTO.DateStart,
+            DateEnd = exerciseDTO.DateEnd,
+            Comments = exerciseDTO.Comments
+        };
+        var exerciseAdded = await _exerciseRepo.AddExerciseAsync(exercise);
+        if (exerciseAdded != 1) return false;
+        return true;
+    }
+
+    internal async Task<bool> IsExercisesUpdatedAsync(long id, Exercise exercise)
+    {
+        int exerciseUpdated = await _exerciseRepo.UpdateExerciseAsync(id, exercise);
+        if (exerciseUpdated != 1) return false;
+        return true;
+    }
+
     internal async Task<bool> IsExerciseDeletedAsync(Exercise exercise)
     {
         int exerciseDeleted = await _exerciseRepo.DeleteExerciseAsync(exercise);
         if (exerciseDeleted != 1) return false;
         return true;
     }
-
 }
