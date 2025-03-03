@@ -13,11 +13,14 @@ class ApplicationCoordinator
 
     private readonly DisplayManager _displayManager;
 
-    public ApplicationCoordinator(UserInput userInput, ExerciseController exerciseController, DisplayManager displayManager)
+    private readonly Validation _validation;
+
+    public ApplicationCoordinator(UserInput userInput, ExerciseController exerciseController, DisplayManager displayManager, Validation validation)
     {
         _userInput = userInput;
         _exerciseController = exerciseController;
         _displayManager = displayManager;
+        _validation = validation;
     }
 
     internal async Task Start()
@@ -34,13 +37,13 @@ class ApplicationCoordinator
                     await AllExercises();
                     break;
                 case "Create exercise":
-
+                    await CreateExercise();
                     break;
                 case "Update exercise":
-
+                    await UpdateExercise();
                     break;
                 case "Delete exercise":
-
+                    await DeleteExercise();
                     break;
                 case "Quit application":
                     isAppActive = false;
@@ -91,6 +94,80 @@ class ApplicationCoordinator
         return await _exerciseController.GetExerciseByIdAsync(exerciseId);
     }
 
+    internal async Task CreateExercise()
+    {
+        var startTime = _userInput.GetExerciseTimes("Please enter the start date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 13:15'");
+        var endTime = _userInput.GetExerciseTimes("Please enter the end date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 15:30' later than the start");
+        while (!_validation.IsEndTimeLaterThanStartTime(startTime, endTime))
+        {
+            endTime = _userInput.GetExerciseTimes("Please enter the end date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 15:30' later than the start");
+        }
+        var comments = _userInput.GetComments("Please enter comments about the exercise");
+
+        var createdExercise = new ExerciseDTO
+        {
+            DateStart = startTime,
+            DateEnd = endTime,
+            Comments = comments
+        };
+
+        var result = await _exerciseController.IsExerciseAddedAsync(createdExercise);
+
+        if (result)
+        {
+            _displayManager.ShowMessage("Exercise created successfully");
+            _userInput.WaitForUserInput();
+        }
+        else
+        {
+            _displayManager.ShowMessage("Failed to create exercise, returning to main menu...");
+            _userInput.WaitForUserInput();
+        }
+    }
+
+    internal async Task UpdateExercise()
+    {
+        await AllExercises();
+
+        long displayId = _userInput.GetId("Please enter the id of exercise you wish to update or enter 0 to return to main menu");
+        if (displayId == 0) return;
+
+        Exercise? exerciseObject = await GetExercise(displayId);
+
+        if (exerciseObject == null)
+        {
+            _displayManager.ShowMessage("Exercise does not exist, returning to main menu...");
+            _userInput.WaitForUserInput();
+            return;
+        }
+
+        var startTime = _userInput.GetExerciseTimes("Please enter the start date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 13:15'");
+        var endTime = _userInput.GetExerciseTimes("Please enter the end date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 15:30' later than the start");
+        while (!_validation.IsEndTimeLaterThanStartTime(startTime, endTime))
+        {
+            endTime = _userInput.GetExerciseTimes("Please enter the end date and time in 'dd-mm-yyyy hh:mm' format, for example '24-02-2025 15:30' later than the start");
+        }
+
+        var comments = _userInput.GetComments("Please enter comments about the exercise");
+
+        exerciseObject.DateStart = startTime;
+        exerciseObject.DateEnd = endTime;
+        exerciseObject.Comments = comments;
+
+        var updatedExercise = await _exerciseController.IsExerciseUpdatedAsync(exerciseObject.Id, exerciseObject);
+
+        if (updatedExercise)
+        {
+            _displayManager.ShowMessage("Exercise has been updated successfully");
+            _userInput.WaitForUserInput();
+        }
+        else
+        {
+            _displayManager.ShowMessage("Exercise has failed to update, returning to main menu...");
+            _userInput.WaitForUserInput();
+        }
+    }
+
     internal async Task DeleteExercise()
     {
         await AllExercises();
@@ -107,18 +184,19 @@ class ApplicationCoordinator
             return;
         }
 
-        long employeeId = idPairs[displayId];
+        long exerciseId = idPairs[displayId];
+        var exerciseToBeDeleted = await GetExercise(exerciseId);
 
-        var result = await _employeeService.DeleteEmployee(employeeId);
+        var result = await _exerciseController.IsExerciseDeleteAsync(exerciseToBeDeleted);
 
-        if (result.Success)
+        if (result)
         {
-            _displayManager.ShowMessage(result.Message);
+            _displayManager.ShowMessage("Exercise deleted successfully");
             _userInput.WaitForUserInput();
         }
         else
         {
-            _displayManager.ShowMessage(result.Message);
+            _displayManager.ShowMessage("Exercise doesn't exist, returning to main menu...");
             _userInput.WaitForUserInput();
         }
     }
