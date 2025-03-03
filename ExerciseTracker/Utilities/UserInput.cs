@@ -48,11 +48,18 @@ class UserInput
         return userInput;
     }
 
-    internal DateTime GetShiftTimes(string message)
+    internal DateTime GetExerciseTimes(string message)
     {
         string userInput = AnsiConsole.Ask<string>(message);
         DateTime parsedTime = _parser.Parser(userInput);
         return parsedTime;
+    }
+
+    internal string ReturnToMainMenu(string message)
+    {
+        string userInput = AnsiConsole.Ask<string>(message);
+        userInput = _validation.ValidateString(message, userInput);
+        return userInput;
     }
 
     internal void WaitForUserInput()
